@@ -185,9 +185,13 @@ def freyberg_basic_restart_test():
     # shutil.copytree(template_d, test_d)
     pst_name = os.path.join(template_d, "pest.pst")
     pst = pyemu.Pst(pst_name)
+    jco = pyemu.Matrix.from_binary(os.path.join(template_d,"pest_basic_restart.jcb"))
+    jco = jco.get(pst.obs_names,pst.par_names)
+    jco.to_binary(os.path.join(template_d,"temp.jcb"))
+    
     pst.control_data.noptmax = 1
     pst.pestpp_options["num_reals"] = 10
-    pst.pestpp_options["base_jacobian"] = "pest_basic_restart.jcb"
+    pst.pestpp_options["base_jacobian"] = "temp.jcb"
     pst.pestpp_options["n_iter_base"] = -1
     pst.pestpp_options["n_iter_super"] = pst.control_data.noptmax
     pst.write(os.path.join(template_d,"pest_basic.pst"))
