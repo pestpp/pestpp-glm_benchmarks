@@ -37,8 +37,6 @@ elif "darwin" in platform.platform().lower():
 else:
     exe_path = os.path.join(bin_path, "linux", "pestpp-glm")
 
-
-diff_tol = 1.0e-6
 port = 4016
 
 
@@ -88,7 +86,7 @@ def tenpar_superpar_restart_test():
                                port=port)
     pst = pyemu.Pst(os.path.join(test_d,"pest_restart1.pst"))
     print(pst.phi)
-    assert pst.phi < 0.1
+    assert pst.phi < 1.0e-10,pst.phi
     assert os.path.exists(os.path.join(test_d,"pest_restart1.post.obsen.csv"))
 
     pst.control_data.noptmax = 5
@@ -102,7 +100,7 @@ def tenpar_superpar_restart_test():
                                port=port)
     pst = pyemu.Pst(os.path.join(test_d,"pest_restart1.pst"))
     print(pst.phi)
-    #assert pst.phi == 0.0
+    assert pst.phi < 1.0e-10
     assert os.path.exists(os.path.join(test_d,"pest_restart1.post.obsen.csv"))
     par_unc1 = pd.read_csv(os.path.join(test_d,"pest_restart1.par.usum.csv"),index_col=0)
 
@@ -150,9 +148,9 @@ def tenpar_base_test():
                                port=port)
     pst_master = pyemu.Pst(os.path.join(test_d,"pest_basic.pst"))
     print(pst_master.phi)
-    assert pst_master.phi < 1.0e-10
-    assert os.path.exists(os.path.join(test_d,"pest_restart1.post.obsen.csv"))
-
+    assert pst_master.phi < 1.0e-10,pst_master.phi 
+    assert os.path.exists(os.path.join(test_d,"pest_basic.post.obsen.csv"))
+ 
     pst.parameter_data.loc[pst.par_names[1:],"partrans"] = "fixed"
     pst.write(pst_name)
     pyemu.os_utils.start_workers(template_d, exe_path, "pest_basic.pst", num_workers=5,
@@ -160,8 +158,8 @@ def tenpar_base_test():
                                port=port)
     pst_master = pyemu.Pst(os.path.join(test_d,"pest_basic.pst"))
     print(pst_master.phi)
-    assert pst_master.phi < 1.0e-10
-    assert os.path.exists(os.path.join(test_d,"pest_restart1.post.obsen.csv"))
+    assert pst_master.phi < 1.0e-10,pst_master.phi 
+    assert os.path.exists(os.path.join(test_d,"pest_basic.post.obsen.csv"))
 
     pst.parameter_data.loc[pst.par_names[0],"parval1"] = pst.parameter_data.loc[pst.par_names[0],"parubnd"]
     pst.write(pst_name)
@@ -170,8 +168,8 @@ def tenpar_base_test():
                                port=port)
     pst_master = pyemu.Pst(os.path.join(test_d,"pest_basic.pst"))
     print(pst_master.phi)
-    assert pst_master.phi < 1.0e-10
-    assert os.path.exists(os.path.join(test_d,"pest_restart1.post.obsen.csv"))
+    assert pst_master.phi < 1.0e-10,pst_master.phi 
+    assert os.path.exists(os.path.join(test_d,"pest_basic.post.obsen.csv"))
 
 
 def freyberg_basic_restart_test():
@@ -229,8 +227,8 @@ def freyberg_basic_restart_test():
 
 
 if __name__ == "__main__":  
-    #tenpar_base_test()
+    tenpar_base_test()
     tenpar_superpar_restart_test()
-    #freyberg_basic_restart_test()
+    freyberg_basic_restart_test()
 
     
