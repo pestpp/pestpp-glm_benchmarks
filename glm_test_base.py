@@ -63,7 +63,7 @@ def tenpar_superpar_restart_test():
     pst.pestpp_options["base_jacobian"] = "restart.jcb"
     pst.pestpp_options["hotstart_resfile"] = "restart.rei"
     pst.control_data.noptmax = -1
-    pst.pestpp_options["num_reals"] = 10
+    pst.pestpp_options["glm_num_reals"] = 10
     pst_name = os.path.join(template_d, "pest_restart1.pst")
     pst.write(pst_name)
     pyemu.os_utils.start_workers(template_d, exe_path, "pest_restart1.pst", num_workers=5,
@@ -75,7 +75,7 @@ def tenpar_superpar_restart_test():
     assert os.path.exists(os.path.join(test_d,"pest_restart1.post.obsen.csv"))
 
     pst.control_data.noptmax = 5
-    pst.pestpp_options["num_reals"] = 10
+    pst.pestpp_options["glm_num_reals"] = 10
     pst_name = os.path.join(template_d, "pest_restart1.pst")
     pst.write(pst_name)
     pyemu.os_utils.start_workers(template_d, exe_path, "pest_restart1.pst", num_workers=5,
@@ -89,7 +89,7 @@ def tenpar_superpar_restart_test():
     pst.control_data.noptmax = 5
     pst.pestpp_options["n_iter_base"] = -1
     pst.pestpp_options["n_iter_super"] = pst.control_data.noptmax
-    pst.pestpp_options["num_reals"] = 10
+    pst.pestpp_options["glm_num_reals"] = 10
     pst_name = os.path.join(template_d, "pest_restart1.pst")
     pst.write(pst_name)
     pyemu.os_utils.start_workers(template_d, exe_path, "pest_restart1.pst", num_workers=5,
@@ -134,7 +134,7 @@ def tenpar_base_test():
     #pst.parameter_data.loc[:,"parval1"] = pst.parameter_data.parubnd
 
     pst.pestpp_options = {}
-    pst.pestpp_options["ies_num_reals"] = 10
+    pst.pestpp_options["glm_num_reals"] = 10
     pst.control_data.noptmax = 3
 
     # pst.pestpp_options["ies_verbose_level"] = 3
@@ -186,7 +186,7 @@ def freyberg_basic_restart_test():
     pst.prior_information = pst.null_prior
     pst.control_data.pestmode = "estimation"
     pst.control_data.noptmax = 1
-    pst.pestpp_options["num_reals"] = 10
+    pst.pestpp_options["glm_num_reals"] = 10
     pst.pestpp_options["base_jacobian"] = "temp.jcb"
     pst.pestpp_options["n_iter_base"] = -1
     pst.pestpp_options["n_iter_super"] = pst.control_data.noptmax
@@ -205,7 +205,7 @@ def freyberg_basic_restart_test():
     assert diff.max() < 1.0e-5,diff.max()
 
     pst.control_data.noptmax = 4
-    pst.pestpp_options["num_reals"] = 10
+    pst.pestpp_options["glm_num_reals"] = 10
     pst.pestpp_options["n_iter_base"] = -1
     pst.pestpp_options["n_iter_super"] = pst.control_data.noptmax
     pst.write(os.path.join(template_d,"pest_basic.pst"))
@@ -232,7 +232,7 @@ def jac_diff_invest():
 
 if __name__ == "__main__":  
     #tenpar_base_test()
-    tenpar_superpar_restart_test()
+    #tenpar_superpar_restart_test()
     freyberg_basic_restart_test()
     #jac_diff_invest()
     
