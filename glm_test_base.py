@@ -240,6 +240,7 @@ def new_fmt_load_test():
             continue
         pst = pyemu.Pst(os.path.join(pst_d, pst_file))
         pst.pestpp_options["debug_parse_only"] = True
+        pst.control_data.noptmax = 0
 
         pst.write(os.path.join(test_d, pst_file))
         pyemu.os_utils.run("{0} {1}".format(exe_path,pst_file), cwd=test_d)
