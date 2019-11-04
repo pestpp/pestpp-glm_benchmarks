@@ -235,6 +235,24 @@ def new_fmt_load_test():
         shutil.rmtree(test_d)
     os.makedirs(test_d)
     pst_files = os.listdir(pst_d)
+
+    def rec_scrape(pst_file):
+        rec_file = pst_file.replace(".pst",".rec")
+        assert os.path.exists(os.path.join(test_d,rec_file)),rec_file
+        with open(os.path.join(test_d,rec_file),'r') as f:
+            for line in f:
+
+                if "number of adjustable parameters" in line.lower():
+                    raw = line.split('=')
+                    npar_adj = int(raw[1])
+                elif "number of observations" in line.lower():
+                    raw = line.split('=')
+                    nobs = int(raw[1])
+                elif "number of prior estimates" in line.lower():
+                    raw = line.split('=')
+                    npi = int(raw[1])
+        return npar_adj,nobs,npi
+
     for pst_file in pst_files:
         if ".pst" not in pst_file:
             continue
@@ -244,8 +262,15 @@ def new_fmt_load_test():
 
         pst.write(os.path.join(test_d, pst_file))
         pyemu.os_utils.run("{0} {1}".format(exe_path,pst_file), cwd=test_d)
+        npar_adj,nobs,npi = rec_scrape(pst_file)
+        assert npar_adj == pst.npar_adj
+        assert nobs == pst.nobs
+        assert npi == pst.nprior
         pst.write(os.path.join(test_d, "test.pst"), version=2)
         pyemu.os_utils.run("{0} {1}".format(exe_path,pst_file), cwd=test_d)
+        assert npar_adj == pst.npar_adj
+        assert nobs == pst.nobs
+        assert npi == pst.nprior
 
 if __name__ == "__main__":
     # tenpar_base_test()
