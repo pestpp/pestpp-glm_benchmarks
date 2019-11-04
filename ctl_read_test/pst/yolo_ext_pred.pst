@@ -1525,3 +1525,4 @@ fremont_loads_rjh_sep19.ins summary-statistics-fremontweir.txt
 ++ OVERDUE_GIVEUP_FAC(1.75)
 ++# AUTO_NORM(4)
 ++ LAMBDAS(.05, 1, 5, 50, 500, 5000)
+++debug_parse_only(true)
