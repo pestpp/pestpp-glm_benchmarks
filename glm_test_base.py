@@ -251,7 +251,12 @@ def new_fmt_load_test():
                 elif "number of prior estimates" in line.lower():
                     raw = line.split('=')
                     npi = int(raw[1])
-        return npar_adj,nobs,npi
+                elif "forecasts:" in line.lower():
+                    raw = line.split(":")
+                    forecasts = [r.strip().lower() for r in raw[1].split(',') if len(r.strip())]
+                    #print(forecasts)
+
+        return npar_adj,nobs,npi,forecasts
 
     for pst_file in pst_files:
         if ".pst" not in pst_file:
@@ -262,15 +267,44 @@ def new_fmt_load_test():
 
         pst.write(os.path.join(test_d, pst_file))
         pyemu.os_utils.run("{0} {1}".format(exe_path,pst_file), cwd=test_d)
-        npar_adj,nobs,npi = rec_scrape(pst_file)
+        npar_adj,nobs,npi,forecasts = rec_scrape(pst_file)
         assert npar_adj == pst.npar_adj
         assert nobs == pst.nobs
         assert npi == pst.nprior
+        if "predictions" in pst.pestpp_options:
+            py_preds = set(pst.pestpp_options["predictions"].split(','))
+            forecasts = set(forecasts)
+            d = py_preds - forecasts
+            print(pst_file,d)
+            if len(d) > 0:
+                raise Exception(pst_file + ": "+str(d))
+        if  "forecasts" in pst.pestpp_options:
+            py_preds = set(pst.pestpp_options["forecasts"].split(','))
+            forecasts = set(forecasts)
+            d = py_preds - forecasts
+            print(pst_file,py_preds,forecasts)
+            if len(d) > 0:
+                raise Exception(pst_file + ": "+str(d))
         pst.write(os.path.join(test_d, "test.pst"), version=2)
         pyemu.os_utils.run("{0} {1}".format(exe_path,pst_file), cwd=test_d)
+        npar_adj,nobs,npi,forecasts = rec_scrape(pst_file)
         assert npar_adj == pst.npar_adj
         assert nobs == pst.nobs
         assert npi == pst.nprior
+        if "predictions" in pst.pestpp_options:
+            py_preds = set(pst.pestpp_options["predictions"].split(','))
+            forecasts = set(forecasts)
+            d = py_preds - forecasts
+            print(pst_file,d)
+            if len(d) > 0:
+                raise Exception(pst_file + ": "+str(d))
+        if  "forecasts" in pst.pestpp_options:
+            py_preds = set(pst.pestpp_options["forecasts"].split(','))
+            forecasts = set(forecasts)
+            d = py_preds - forecasts
+            print(pst_file,py_preds,forecasts)
+            if len(d) > 0:
+                raise Exception(pst_file + ": "+str(d))
 
 if __name__ == "__main__":
     # tenpar_base_test()
