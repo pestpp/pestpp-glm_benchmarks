@@ -276,7 +276,7 @@ Particle summary:
          1 particles terminated in zone    1
          0 particles were stranded
  
-Default real number precision =          6
+Default real number precision =         15
 Heads input from single-precision head file.
 Flows input from single-precision compact budget file.
  
