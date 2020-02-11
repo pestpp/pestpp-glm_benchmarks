@@ -400,7 +400,7 @@ def freyberg_stress_test():
     pst.svd_data.maxsing = 10
     pst.prior_information = pst.null_prior
     pst.control_data.pestmode = "estimation"
-    pst.control_data.noptmax = 3
+    pst.control_data.noptmax = 5
     pst.pestpp_options["max_n_super"] = 10
     pst.pestpp_options["glm_num_reals"] = 10
     pst.pestpp_options["base_jacobian"] = "temp.jcb"
@@ -408,7 +408,7 @@ def freyberg_stress_test():
     pst.pestpp_options["n_iter_super"] = pst.control_data.noptmax
     #pst.pestpp_options["glm_debug_der_fail"] = True
     pst.pestpp_options["glm_debug_lamb_fail"] = True
-    pst.pestpp_options["glm_normal_form"] = "prior"
+    pst.pestpp_options["glm_normal_form"] = "diag"
     pst.pestpp_options["parcov"] = "prior.jcb"
     pst.pestpp_options["glm_accept_mc_phi"] = True
     pst.write(os.path.join(template_d, "pest_stress.pst"))
@@ -417,7 +417,7 @@ def freyberg_stress_test():
                                  port=port)
     pst = pyemu.Pst(os.path.join(test_d,"pest_stress.pst"))
     print(pst.phi)
-    assert pst.phi < 8.5
+    assert pst.phi < 35
     oe = pd.read_csv(os.path.join(test_d,"pest_stress.post.obsen.csv"),index_col=0)
     assert oe.dropna().shape == (int(pst.pestpp_options["glm_num_reals"]),pst.nobs),oe.dropna().shape
     
