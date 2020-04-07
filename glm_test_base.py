@@ -319,13 +319,22 @@ def tenpar_hotstart_test():
     pst_name = os.path.join(template_d, "pest.pst")
     pst = pyemu.Pst(pst_name)
     pst.control_data.pestmode = "estimation"
-    pst.control_data.noptmax = -1
+    pst.control_data.noptmax = 1
+    pyemu.helpers.zero_order_tikhonov(pst)
+  
+    
     pst.write(os.path.join(template_d,"pest_temp.pst"))
     #pyemu.os_utils.run("{0} pest_temp.pst".format(exe_path),cwd=template_d)
     pyemu.os_utils.start_workers(template_d, exe_path, "pest_temp.pst", num_workers=10,
                                  master_dir=test_d, verbose=True, worker_root=model_d,
                                  port=port)
-    
+    def super_failed(rec_file):
+        with open(rec_file,'r') as f:
+            for line in f:
+                if "super parameter process" in line.lower():
+                    return True
+        return False
+
     
     pst.control_data.noptmax = 1
     shutil.copy2(os.path.join(test_d,"pest_temp.jcb"),os.path.join(template_d,"pest_temp.jcb"))
@@ -340,6 +349,20 @@ def tenpar_hotstart_test():
     pyemu.os_utils.start_workers(template_d, exe_path, "pest_hotstart.pst", num_workers=10,
                                  master_dir=test_d, verbose=True, worker_root=model_d,
                                  port=port)
+    assert os.path.exists(os.path.join(test_d,"pest_hotstart.post.obsen.csv"))
+    if super_failed(os.path.join(test_d,"pest_hotstart.rec")):
+        raise Exception("super failed")
+
+    pst.pestpp_options["n_iter_base"] = -1
+    pst.pestpp_options["n_iter_super"] = 2
+    pst.control_data.noptmax = 2
+    pst.write(os.path.join(template_d, "pest_hotstart.pst"))
+    pyemu.os_utils.start_workers(template_d, exe_path, "pest_hotstart.pst", num_workers=10,
+                                 master_dir=test_d, verbose=True, worker_root=model_d,
+                                 port=port)
+    assert os.path.exists(os.path.join(test_d,"pest_hotstart.post.obsen.csv"))
+    if super_failed(os.path.join(test_d,"pest_hotstart.rec")):
+        raise Exception("super failed")
     
 def tenpar_normalform_test():
     model_d = "glm_10par_xsec"
@@ -461,12 +484,12 @@ def tenpar_xsec_stress_test():
     
 
 if __name__ == "__main__":
-    # tenpar_base_test()
+    #tenpar_base_test()
     #tenpar_superpar_restart_test()
     #freyberg_basic_restart_test()
     # jac_diff_invest()
     #new_fmt_load_test()
-    #tenpar_hotstart_test()
+    tenpar_hotstart_test()
     #tenpar_normalform_test()
-    freyberg_stress_test()
+    #freyberg_stress_test()
     #tenpar_xsec_stress_test()
