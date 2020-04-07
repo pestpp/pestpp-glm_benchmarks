@@ -319,7 +319,7 @@ def tenpar_hotstart_test():
     pst_name = os.path.join(template_d, "pest.pst")
     pst = pyemu.Pst(pst_name)
     pst.control_data.pestmode = "estimation"
-    pst.control_data.noptmax = 1
+    pst.control_data.noptmax = -1
     pyemu.helpers.zero_order_tikhonov(pst)
   
     
@@ -335,8 +335,23 @@ def tenpar_hotstart_test():
                     return True
         return False
 
-    
-    pst.control_data.noptmax = 1
+    pst.control_data.noptmax = 2
+    shutil.copy2(os.path.join(test_d,"pest_temp.jcb"),os.path.join(template_d,"pest_temp.jcb"))
+    shutil.copy2(os.path.join(test_d,"pest_temp.rei"),os.path.join(template_d,"pest_temp.rei"))
+    pst.pestpp_options["base_jacobian"] = "pest_temp.jcb"
+    pst.pestpp_options["n_iter_base"] = -1
+    pst.pestpp_options["n_iter_super"] = 2
+    #pst.pestpp_options["n_iter_super"] = pst.control_data.noptmax
+    pst.pestpp_options["glm_num_reals"] = 5
+    pst.write(os.path.join(template_d, "pest_hotstart.pst"))
+    pyemu.os_utils.start_workers(template_d, exe_path, "pest_hotstart.pst", num_workers=10,
+                                 master_dir=test_d, verbose=True, worker_root=model_d,
+                                 port=port)
+    assert os.path.exists(os.path.join(test_d,"pest_hotstart.post.obsen.csv"))
+    if super_failed(os.path.join(test_d,"pest_hotstart.rec")):
+        raise Exception("super failed")
+    return
+    pst.control_data.noptmax = 2
     shutil.copy2(os.path.join(test_d,"pest_temp.jcb"),os.path.join(template_d,"pest_temp.jcb"))
     shutil.copy2(os.path.join(test_d,"pest_temp.rei"),os.path.join(template_d,"pest_temp.rei"))
     pst.pestpp_options["base_jacobian"] = "pest_temp.jcb"
