@@ -350,7 +350,7 @@ def tenpar_hotstart_test():
     assert os.path.exists(os.path.join(test_d,"pest_hotstart.post.obsen.csv"))
     if super_failed(os.path.join(test_d,"pest_hotstart.rec")):
         raise Exception("super failed")
-    return
+    
     pst.control_data.noptmax = 2
     shutil.copy2(os.path.join(test_d,"pest_temp.jcb"),os.path.join(template_d,"pest_temp.jcb"))
     shutil.copy2(os.path.join(test_d,"pest_temp.rei"),os.path.join(template_d,"pest_temp.rei"))
