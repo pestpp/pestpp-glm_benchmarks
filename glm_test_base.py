@@ -403,7 +403,7 @@ def tenpar_normalform_test():
     pyemu.os_utils.start_workers(template_d, exe_path, "pest_prior.pst", num_workers=10,
                                  master_dir=test_d, verbose=True, worker_root=model_d,
                                  port=port)
-    return
+
     pst.pestpp_options["glm_normal_form"] = "diag"
     pst.write(os.path.join(template_d, "pest_diag.pst"))
     pyemu.os_utils.start_workers(template_d, exe_path, "pest_diag.pst", num_workers=10,
@@ -504,7 +504,7 @@ if __name__ == "__main__":
     #freyberg_basic_restart_test()
     # jac_diff_invest()
     #new_fmt_load_test()
-    tenpar_hotstart_test()
-    #tenpar_normalform_test()
+    # tenpar_hotstart_test()
+    tenpar_normalform_test()
     #freyberg_stress_test()
     #tenpar_xsec_stress_test()
