@@ -394,16 +394,44 @@ def tenpar_normalform_test():
     pst.control_data.noptmax = 5
     pst.pestpp_options["glm_num_reals"] = 5
     pst.pestpp_options["n_iter_super"] = 3
-    pst.pestpp_options["n_iter_base"] = -1
+    pst.pestpp_options["n_iter_base"] = 1
     pst.pestpp_options["glm_normal_form"] = "prior"
     pst.pestpp_options["max_n_super"] = 2
     pst.svd_data.maxsing = 2
+    #pst.write(os.path.join(template_d, "pest_prior.pst"))
+    #pyemu.os_utils.start_workers(template_d, exe_path, "pest_diag.pst", num_workers=10,
+    #                             master_dir=test_d, verbose=True, worker_root=model_d,
+    #                             port=port)
+
+    pst.control_data.noptmax = -1
+    par = pst.parameter_data
+    par.loc["k_03","parval1"] = 0.9
+    par.loc["k_03","parlbnd"] = 0.8
+    par.loc["k_03","parubnd"] = 1.0
+    par.loc["k_05","parubnd"] = 2.55
     pst.write(os.path.join(template_d,"pest_prior.pst"))
     #pyemu.os_utils.run("{0} pest_temp.pst".format(exe_path),cwd=template_d)
     pyemu.os_utils.start_workers(template_d, exe_path, "pest_prior.pst", num_workers=10,
                                  master_dir=test_d, verbose=True, worker_root=model_d,
                                  port=port)
-
+    shutil.copy2(os.path.join(test_d,"pest_prior.jcb"),os.path.join(template_d,"restart.jcb"))
+    shutil.copy2(os.path.join(test_d,"pest_prior.rei"),os.path.join(template_d,"restart.rei"))
+    pst.pestpp_options["base_jacobian"] = "restart.jcb"
+    pst.pestpp_options["hotstart_resfile"] = "restart.rei"
+    pst.pestpp_options["n_iter_base"] = -1
+    pst.control_data.noptmax = 5
+    pst.pestpp_options["n_iter_super"] = pst.control_data.noptmax
+    par = pst.parameter_data
+    par.loc["k_03","parval1"] = 0.9
+    par.loc["k_03","parlbnd"] = 0.8
+    par.loc["k_03","parubnd"] = 1.0
+    par.loc["k_05","parubnd"] = 2.55
+    pst.write(os.path.join(template_d,"pest_prior.pst"))
+    #pyemu.os_utils.run("{0} pest_temp.pst".format(exe_path),cwd=template_d)
+    pyemu.os_utils.start_workers(template_d, exe_path, "pest_prior.pst", num_workers=10,
+                                 master_dir=test_d, verbose=True, worker_root=model_d,
+                                 port=port)
+ 
     pst.pestpp_options["glm_normal_form"] = "diag"
     pst.write(os.path.join(template_d, "pest_diag.pst"))
     pyemu.os_utils.start_workers(template_d, exe_path, "pest_diag.pst", num_workers=10,
