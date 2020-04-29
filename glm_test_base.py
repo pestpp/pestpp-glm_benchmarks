@@ -506,13 +506,14 @@ def tenpar_xsec_stress_test():
     pst.svd_data.maxsing = 10
     pst.prior_information = pst.null_prior
     pst.control_data.pestmode = "estimation"
-    pst.control_data.noptmax = 3
+    pst.control_data.noptmax = 4
     pst.pestpp_options["glm_num_reals"] = 10
     pst.pestpp_options["n_iter_base"] = 1
     pst.pestpp_options["n_iter_super"] = pst.control_data.noptmax
     #pst.pestpp_options["glm_debug_der_fail"] = True
     pst.pestpp_options["glm_debug_lamb_fail"] = True
     pst.pestpp_options["glm_normal_form"] = "prior"
+    pst.pestpp_options["glm_accept_mc_phi"] = True
     pst.pestpp_options["glm_accept_mc_phi"] = True
     pst.write(os.path.join(template_d, "pest_stress.pst"))
     pyemu.os_utils.start_workers(template_d, exe_path, "pest_stress.pst", num_workers=10,
@@ -532,7 +533,7 @@ if __name__ == "__main__":
     #freyberg_basic_restart_test()
     # jac_diff_invest()
     #new_fmt_load_test()
-    # tenpar_hotstart_test()
-    tenpar_normalform_test()
+    #tenpar_hotstart_test()
+    #tenpar_normalform_test()
     #freyberg_stress_test()
-    #tenpar_xsec_stress_test()
+    tenpar_xsec_stress_test()
