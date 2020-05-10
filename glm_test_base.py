@@ -435,6 +435,7 @@ def tenpar_normalform_test():
                                  master_dir=test_d, verbose=True, worker_root=model_d,
                                  port=port)
     pst.pestpp_options["glm_normal_form"] = "diag"
+    pst.control_data.noptmax = 3
     pst.write(os.path.join(template_d, "pest_diag.pst"))
     pyemu.os_utils.start_workers(template_d, exe_path, "pest_diag.pst", num_workers=10,
                                  master_dir=test_d, verbose=True, worker_root=model_d,
