@@ -390,6 +390,9 @@ def tenpar_normalform_test():
     # shutil.copytree(template_d, test_d)
     pst_name = os.path.join(template_d, "pest.pst")
     pst = pyemu.Pst(pst_name)
+    with open(os.path.join(template_d,"dum.dat.tpl"),'w') as f:
+        f.write("ptf ~\n~   dum1   ~\n")
+    pst.add_parameters(os.path.join(template_d,"dum.dat.tpl"),pst_path=".")
     pst.control_data.pestmode = "estimation"
     pst.control_data.noptmax = 5
     pst.pestpp_options["glm_num_reals"] = 5
@@ -398,10 +401,10 @@ def tenpar_normalform_test():
     pst.pestpp_options["glm_normal_form"] = "prior"
     pst.pestpp_options["max_n_super"] = 2
     pst.svd_data.maxsing = 2
-    #pst.write(os.path.join(template_d, "pest_prior.pst"))
-    #pyemu.os_utils.start_workers(template_d, exe_path, "pest_diag.pst", num_workers=10,
-    #                             master_dir=test_d, verbose=True, worker_root=model_d,
-    #                             port=port)
+    pst.write(os.path.join(template_d, "pest_prior.pst"))
+    pyemu.os_utils.start_workers(template_d, exe_path, "pest_diag.pst", num_workers=10,
+                                master_dir=test_d, verbose=True, worker_root=model_d,
+                                port=port)
 
     pst.control_data.noptmax = -1
     par = pst.parameter_data
@@ -431,7 +434,6 @@ def tenpar_normalform_test():
     pyemu.os_utils.start_workers(template_d, exe_path, "pest_prior.pst", num_workers=10,
                                  master_dir=test_d, verbose=True, worker_root=model_d,
                                  port=port)
- 
     pst.pestpp_options["glm_normal_form"] = "diag"
     pst.write(os.path.join(template_d, "pest_diag.pst"))
     pyemu.os_utils.start_workers(template_d, exe_path, "pest_diag.pst", num_workers=10,
@@ -534,6 +536,6 @@ if __name__ == "__main__":
     # jac_diff_invest()
     #new_fmt_load_test()
     #tenpar_hotstart_test()
-    #tenpar_normalform_test()
+    tenpar_normalform_test()
     #freyberg_stress_test()
-    tenpar_xsec_stress_test()
+    #tenpar_xsec_stress_test()
