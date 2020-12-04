@@ -402,7 +402,7 @@ def tenpar_normalform_test():
     pst.pestpp_options["max_n_super"] = 2
     pst.svd_data.maxsing = 2
     pst.write(os.path.join(template_d, "pest_prior.pst"))
-    pyemu.os_utils.start_workers(template_d, exe_path, "pest_diag.pst", num_workers=10,
+    pyemu.os_utils.start_workers(template_d, exe_path, "pest_prior.pst", num_workers=10,
                                 master_dir=test_d, verbose=True, worker_root=model_d,
                                 port=port)
 
