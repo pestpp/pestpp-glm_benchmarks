@@ -537,6 +537,9 @@ if __name__ == "__main__":
     # jac_diff_invest()
     #new_fmt_load_test()
     #tenpar_hotstart_test()
-    tenpar_normalform_test()
+    #tenpar_normalform_test()
     #freyberg_stress_test()
     #tenpar_xsec_stress_test()
+    shutil.copy2(os.path.join("..","exe","windows","x64","Debug","pestpp-glm.exe"),os.path.join("..","bin","win","pestpp-glm.exe"))
+
+    new_fmt_load_test()
