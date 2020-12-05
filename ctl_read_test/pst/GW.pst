@@ -64,7 +64,7 @@ matrix____sy fixed factor 5.000000E-02 1.000000E-02 3.000000E-01 sm 1 0 1
 MATRIX___VKA    MATRIX____HK
 #######################################
 #### PESTPP-SEN
-++ gsa_method(morris)   rand_seed(1234)   gsa_morris_r(10)   gsa_morris_p(4)   gsa_morris_delta(0.667)    gsa_morris_obs_sen(true)   tie_by_group(false)
+++ gsa_method(morris)   random_seed(1234)   gsa_morris_r(10)   gsa_morris_p(4)   gsa_morris_delta(0.667)    gsa_morris_obs_sen(true)   tie_by_group(false)
 ## ++ method(sobol) rand_seed()   sobol_samples()              sobol_par_dist()       tie_by_group(false)
 #######################################
 * observation groups
