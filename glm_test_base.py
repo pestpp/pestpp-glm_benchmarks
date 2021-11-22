@@ -530,6 +530,28 @@ def tenpar_xsec_stress_test():
 
     
 
+def threept_fail_test():
+    model_d = "glm_10par_xsec"
+    test_d = os.path.join(model_d, "master_3pt_fail")
+    template_d = os.path.join(model_d, "template")
+    if not os.path.exists(template_d):
+        raise Exception("template_d {0} not found".format(template_d))
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    shutil.copytree(template_d, test_d)
+
+    pst_name = os.path.join(test_d, "pest.pst")
+    pst = pyemu.Pst(pst_name)
+    pst.pestpp_options = {}
+    pst.parameter_groups.loc[:,"forcen"] = "always_3"
+    pst.control_data.noptmax = 1
+    pst.write(os.path.join(test_d,"pest_fail.pst"))
+
+
+
+
+
+
 if __name__ == "__main__":
     #tenpar_base_test()
     #tenpar_superpar_restart_test()
@@ -539,7 +561,8 @@ if __name__ == "__main__":
     #tenpar_hotstart_test()
     #tenpar_normalform_test()
     #freyberg_stress_test()
-    #tenpar_xsec_stress_test()
     shutil.copy2(os.path.join("..","exe","windows","x64","Debug","pestpp-glm.exe"),os.path.join("..","bin","win","pestpp-glm.exe"))
-
-    new_fmt_load_test()
+    tenpar_xsec_stress_test()
+    
+    #new_fmt_load_test()
+    #threept_fail_test()
