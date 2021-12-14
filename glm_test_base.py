@@ -11,7 +11,7 @@ import pyemu
 bin_path = os.path.join("test_bin")
 if "linux" in platform.platform().lower():
     bin_path = os.path.join(bin_path, "linux")
-elif "darwin" in platform.platform().lower():
+elif "darwin" in platform.platform().lower() or "mac" in platform.platform().lower():
     bin_path = os.path.join(bin_path, "mac")
 else:
     bin_path = os.path.join(bin_path, "win")
@@ -27,7 +27,7 @@ else:
 
 if "windows" in platform.platform().lower():
     exe_path = os.path.join(bin_path, "win", "pestpp-glm.exe")
-elif "darwin" in platform.platform().lower():
+elif "darwin" in platform.platform().lower() or "mac" in platform.platform().lower():
     exe_path = os.path.join(bin_path, "mac", "pestpp-glm")
 else:
     exe_path = os.path.join(bin_path, "linux", "pestpp-glm")
@@ -262,6 +262,7 @@ def new_fmt_load_test():
     for pst_file in pst_files:
         if ".pst" not in pst_file:
             continue
+        print(pst_file)
         pst = pyemu.Pst(os.path.join(pst_d, pst_file))
         pst.pestpp_options["debug_parse_only"] = True
         pst.control_data.noptmax = 0
@@ -561,8 +562,8 @@ if __name__ == "__main__":
     #tenpar_hotstart_test()
     #tenpar_normalform_test()
     #freyberg_stress_test()
-    shutil.copy2(os.path.join("..","exe","windows","x64","Debug","pestpp-glm.exe"),os.path.join("..","bin","win","pestpp-glm.exe"))
-    tenpar_xsec_stress_test()
+    #shutil.copy2(os.path.join("..","exe","windows","x64","Debug","pestpp-glm.exe"),os.path.join("..","bin","win","pestpp-glm.exe"))
+    #tenpar_xsec_stress_test()
     
-    #new_fmt_load_test()
+    new_fmt_load_test()
     #threept_fail_test()
