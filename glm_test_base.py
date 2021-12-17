@@ -549,9 +549,45 @@ def threept_fail_test():
     pst.write(os.path.join(test_d,"pest_fail.pst"))
 
 
-
-
-
+def tenpar_xsec_high_phi_test():
+    model_d = "glm_10par_xsec"
+    test_d = os.path.join(model_d, "master_high_phi")
+    template_d = os.path.join(model_d, "template")
+    if not os.path.exists(template_d):
+        raise Exception("template_d {0} not found".format(template_d))
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    # shutil.copytree(template_d, test_d)
+    pst_name = os.path.join(template_d, "pest.pst")
+    pst = pyemu.Pst(pst_name)
+    pst.pestpp_options = {}
+    par = pst.parameter_data
+    par.loc[:,"parubnd"] *= 1.25
+    par.loc[:,"parubnd"] *= 0.75
+    pst.svd_data.maxsing = 10
+    pst.prior_information = pst.null_prior
+    pst.control_data.pestmode = "estimation"
+    pst.control_data.noptmax = 2
+    pst.pestpp_options["glm_num_reals"] = 10
+    pst.pestpp_options["n_iter_base"] = 1
+    pst.pestpp_options["n_iter_super"] = 2
+    
+    pst.pestpp_options["glm_debug_lamb_fail"] = True
+    pst.pestpp_options["glm_debug_high_2nd_iter_phi"] = True
+    pst.write(os.path.join(template_d, "pest.pst"))
+    pyemu.os_utils.start_workers(template_d, exe_path, "pest.pst", num_workers=10,
+                                 master_dir=test_d, verbose=True, worker_root=model_d,
+                                 port=port)
+    pst = pyemu.Pst(os.path.join(test_d,"pest.pst"))
+    print(pst.phi)
+    assert pst.phi < .5
+    oe = pd.read_csv(os.path.join(test_d,"pest.post.obsen.csv"),index_col=0)
+    assert oe.dropna().shape == (int(pst.pestpp_options["glm_num_reals"]),pst.nobs),oe.dropna().shape
+    p2df = pyemu.pst_utils.read_parfile(os.path.join(test_d,"pest.2.par")).parval1
+    pdf = pyemu.pst_utils.read_parfile(os.path.join(test_d,"pest.par")).parval1
+    d = (p2df - pdf).apply(np.abs).sum()
+    print(d)   
+    assert d > 0.1 
 
 if __name__ == "__main__":
     #tenpar_base_test()
@@ -564,6 +600,7 @@ if __name__ == "__main__":
     #freyberg_stress_test()
     #shutil.copy2(os.path.join("..","exe","windows","x64","Debug","pestpp-glm.exe"),os.path.join("..","bin","win","pestpp-glm.exe"))
     #tenpar_xsec_stress_test()
+    tenpar_xsec_high_phi_test()
     
-    new_fmt_load_test()
+    #new_fmt_load_test()
     #threept_fail_test()
