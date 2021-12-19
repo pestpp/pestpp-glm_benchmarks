@@ -574,17 +574,17 @@ def tenpar_xsec_high_phi_test():
     
     pst.pestpp_options["glm_debug_lamb_fail"] = True
     pst.pestpp_options["glm_debug_high_2nd_iter_phi"] = True
-    pst.write(os.path.join(template_d, "pest.pst"))
-    pyemu.os_utils.start_workers(template_d, exe_path, "pest.pst", num_workers=10,
+    pst.write(os.path.join(template_d, "pest_test.pst"))
+    pyemu.os_utils.start_workers(template_d, exe_path, "pest_test.pst", num_workers=10,
                                  master_dir=test_d, verbose=True, worker_root=model_d,
                                  port=port)
-    pst = pyemu.Pst(os.path.join(test_d,"pest.pst"))
+    pst = pyemu.Pst(os.path.join(test_d,"pest_test.pst"))
     print(pst.phi)
     assert pst.phi < .5
-    oe = pd.read_csv(os.path.join(test_d,"pest.post.obsen.csv"),index_col=0)
+    oe = pd.read_csv(os.path.join(test_d,"pest_test.post.obsen.csv"),index_col=0)
     assert oe.dropna().shape == (int(pst.pestpp_options["glm_num_reals"]),pst.nobs),oe.dropna().shape
-    p2df = pyemu.pst_utils.read_parfile(os.path.join(test_d,"pest.2.par")).parval1
-    pdf = pyemu.pst_utils.read_parfile(os.path.join(test_d,"pest.par")).parval1
+    p2df = pyemu.pst_utils.read_parfile(os.path.join(test_d,"pest_test.2.par")).parval1
+    pdf = pyemu.pst_utils.read_parfile(os.path.join(test_d,"pest_test.par")).parval1
     d = (p2df - pdf).apply(np.abs).sum()
     print(d)   
     assert d > 0.1 
