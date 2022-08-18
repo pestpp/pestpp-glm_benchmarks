@@ -514,7 +514,7 @@ def tenpar_xsec_stress_test():
     pst.pestpp_options["glm_num_reals"] = 10
     pst.pestpp_options["n_iter_base"] = 1
     pst.pestpp_options["n_iter_super"] = pst.control_data.noptmax
-    #pst.pestpp_options["glm_debug_der_fail"] = True
+    pst.pestpp_options["glm_debug_der_fail"] = True
     pst.pestpp_options["glm_debug_lamb_fail"] = True
     pst.pestpp_options["glm_normal_form"] = "prior"
     pst.pestpp_options["glm_accept_mc_phi"] = True
@@ -599,8 +599,8 @@ if __name__ == "__main__":
     #tenpar_normalform_test()
     #freyberg_stress_test()
     #shutil.copy2(os.path.join("..","exe","windows","x64","Debug","pestpp-glm.exe"),os.path.join("..","bin","win","pestpp-glm.exe"))
-    #tenpar_xsec_stress_test()
-    tenpar_xsec_high_phi_test()
+    tenpar_xsec_stress_test()
+    #tenpar_xsec_high_phi_test()
     
     #new_fmt_load_test()
     #threept_fail_test()
