@@ -634,6 +634,47 @@ def tenpar_xsec_stress_test2():
     assert oe.dropna().shape == (int(pst.pestpp_options["glm_num_reals"]),pst.nobs),oe.dropna().shape
 
 
+def tenpar_xsec_stress_test_2():
+    model_d = "glm_10par_xsec"
+    test_d = os.path.join(model_d, "master_stress2")
+    template_d = os.path.join(model_d, "template")
+    if not os.path.exists(template_d):
+        raise Exception("template_d {0} not found".format(template_d))
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    # shutil.copytree(template_d, test_d)
+    pst_name = os.path.join(template_d, "pest.pst")
+    pst = pyemu.Pst(pst_name)
+    pst.pestpp_options = {}
+    par = pst.parameter_data
+    par.loc[:,"parubnd"] *= 1.25
+    par.loc[:,"parubnd"] *= 0.75
+    pst.svd_data.maxsing = 10
+    pst.control_data.pestmode = "regularization"
+    pst.prior_information = pst.null_prior
+    pst.control_data.noptmax = 4
+    pst.pestpp_options["glm_num_reals"] = 10
+    pst.pestpp_options["n_iter_base"] = 10
+    #pst.pestpp_options["n_iter_super"] = pst.control_data.noptmax
+    pst.pestpp_options["glm_debug_der_fail"] = True
+    pst.pestpp_options["glm_debug_lamb_fail"] = True
+    pst.pestpp_options["glm_accept_mc_phi"] = True
+    pst.pestpp_options["glm_debug_high_2nd_iter_phi"] = True
+    pst.pestpp_options["glm_iter_mc"] = True
+    pst.reg_data.phimlim = 10
+    #pst.reg_data.fracphim = 0.5
+    pst.reg_data.phimaccept = 11
+    #pst.reg_data.wfinit = 10
+    pst.write(os.path.join(template_d, "pest_stress.pst"))
+    pyemu.os_utils.start_workers(template_d, exe_path, "pest_stress.pst", num_workers=10,
+                                 master_dir=test_d, verbose=True, worker_root=model_d,
+                                 port=port)
+    pst = pyemu.Pst(os.path.join(test_d,"pest_stress.pst"))
+    print(pst.phi)
+    assert os.path.exists(os.path.join(test_d,"pest_stress.4.par"))
+    oe = pd.read_csv(os.path.join(test_d,"pest_stress.post.obsen.csv"),index_col=0)
+    assert oe.dropna().shape == (int(pst.pestpp_options["glm_num_reals"]),pst.nobs),oe.dropna().shape
+
 if __name__ == "__main__":
     #tenpar_base_test()
     #tenpar_superpar_restart_test()
@@ -644,7 +685,7 @@ if __name__ == "__main__":
     #tenpar_normalform_test()
     #freyberg_stress_test()
     #shutil.copy2(os.path.join("..","exe","windows","x64","Debug","pestpp-glm.exe"),os.path.join("..","bin","win","pestpp-glm.exe"))
-    tenpar_xsec_stress_test()
+    tenpar_xsec_stress_test_2()
     #tenpar_xsec_high_phi_test()
     
     #new_fmt_load_test()
