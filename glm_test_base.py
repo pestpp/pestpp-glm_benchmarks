@@ -659,11 +659,11 @@ def tenpar_xsec_stress_test_2():
     pst.pestpp_options["glm_debug_der_fail"] = True
     pst.pestpp_options["glm_debug_lamb_fail"] = True
     pst.pestpp_options["glm_accept_mc_phi"] = True
-    pst.pestpp_options["glm_debug_high_2nd_iter_phi"] = True
+    #pst.pestpp_options["glm_debug_high_2nd_iter_phi"] = True
     pst.pestpp_options["glm_iter_mc"] = True
-    pst.reg_data.phimlim = 10
+    #pst.reg_data.phimlim = 10
     #pst.reg_data.fracphim = 0.5
-    pst.reg_data.phimaccept = 11
+    #pst.reg_data.phimaccept = 11
     #pst.reg_data.wfinit = 10
     pst.write(os.path.join(template_d, "pest_stress.pst"))
     pyemu.os_utils.start_workers(template_d, exe_path, "pest_stress.pst", num_workers=10,
