@@ -266,6 +266,8 @@ def new_fmt_load_test():
         pst = pyemu.Pst(os.path.join(pst_d, pst_file))
         pst.pestpp_options["debug_parse_only"] = True
         pst.control_data.noptmax = 0
+        if pst.nprior == 0:
+            pst.control_data.pestmode = "estimation"
 
         pst.write(os.path.join(test_d, pst_file))
         pyemu.os_utils.run("{0} {1}".format(exe_path,pst_file), cwd=test_d)
@@ -650,7 +652,7 @@ def tenpar_xsec_stress_test_2():
     par.loc[:,"parubnd"] *= 1.25
     par.loc[:,"parubnd"] *= 0.75
     pst.svd_data.maxsing = 10
-    pst.control_data.pestmode = "regularization"
+    pst.control_data.pestmode = "estimation"
     pst.prior_information = pst.null_prior
     pst.control_data.noptmax = 4
     pst.pestpp_options["glm_num_reals"] = 10
@@ -675,6 +677,65 @@ def tenpar_xsec_stress_test_2():
     oe = pd.read_csv(os.path.join(test_d,"pest_stress.post.obsen.csv"),index_col=0)
     assert oe.dropna().shape == (int(pst.pestpp_options["glm_num_reals"]),pst.nobs),oe.dropna().shape
 
+
+def tenpar_xsec_stress_test_3():
+    model_d = "glm_10par_xsec"
+    test_d = os.path.join(model_d, "master_stress3")
+    template_d = os.path.join(model_d, "template")
+    if not os.path.exists(template_d):
+        raise Exception("template_d {0} not found".format(template_d))
+    if os.path.exists(test_d):
+        shutil.rmtree(test_d)
+    # shutil.copytree(template_d, test_d)
+    pst_name = os.path.join(template_d, "pest.pst")
+    pst = pyemu.Pst(pst_name)
+    pst.pestpp_options = {}
+    par = pst.parameter_data
+    par.loc[:,"parubnd"] *= 1.25
+    par.loc[:,"parubnd"] *= 0.75
+    pst.svd_data.maxsing = 10
+    pst.control_data.pestmode = "regularization"
+    pst.prior_information = pst.null_prior
+    pyemu.helpers.zero_order_tikhonov(pst)
+    pst.control_data.noptmax = 4
+    pst.pestpp_options["glm_num_reals"] = 10
+    pst.pestpp_options["n_iter_base"] = 10
+    #pst.pestpp_options["n_iter_super"] = pst.control_data.noptmax
+    pst.pestpp_options["glm_debug_der_fail"] = False
+    pst.pestpp_options["glm_debug_lamb_fail"] = False
+    pst.pestpp_options["glm_accept_mc_phi"] = True
+    #pst.pestpp_options["glm_debug_high_2nd_iter_phi"] = True
+    pst.pestpp_options["glm_iter_mc"] = True
+    #pst.reg_data.phimlim = 10
+    #pst.reg_data.fracphim = 0.5
+    #pst.reg_data.phimaccept = 11
+    #pst.reg_data.wfinit = 10
+    pst.write(os.path.join(template_d, "pest_stress.pst"))
+    pyemu.os_utils.start_workers(template_d, exe_path, "pest_stress.pst", num_workers=10,
+                                 master_dir=test_d, verbose=True, worker_root=model_d,
+                                 port=port)
+    pst = pyemu.Pst(os.path.join(test_d,"pest_stress.pst"))
+    print(pst.phi)
+    assert os.path.exists(os.path.join(test_d,"pest_stress.4.par"))
+    oe = pd.read_csv(os.path.join(test_d,"pest_stress.post.obsen.csv"),index_col=0)
+    assert oe.dropna().shape == (int(pst.pestpp_options["glm_num_reals"]),pst.nobs),oe.dropna().shape
+
+ 
+    shutil.copy2(os.path.join(test_d,"pest_stress.jcb"),os.path.join(template_d,"restart.jcb"))
+    pst.pestpp_options["base_jacobian"] = "restart.jcb"
+    pst.control_data.noptmax = 1
+    pst.write(os.path.join(template_d, "pest_stress.pst"))
+    test_d += "a"
+    pyemu.os_utils.start_workers(template_d, exe_path, "pest_stress.pst", num_workers=10,
+                                 master_dir=test_d, verbose=True, worker_root=model_d,
+                                 port=port)
+
+def invest():
+    model_d = "glm_10par_xsec"
+    test_d = os.path.join(model_d, "master_stress2")
+    jco = pyemu.Jco.from_binary(os.path.join(test_d,"pest_stress.jcb"))
+    print(jco.to_dataframe())
+
 if __name__ == "__main__":
     #tenpar_base_test()
     #tenpar_superpar_restart_test()
@@ -685,8 +746,11 @@ if __name__ == "__main__":
     #tenpar_normalform_test()
     #freyberg_stress_test()
     #shutil.copy2(os.path.join("..","exe","windows","x64","Debug","pestpp-glm.exe"),os.path.join("..","bin","win","pestpp-glm.exe"))
-    tenpar_xsec_stress_test_2()
+    #tenpar_xsec_stress_test_2()
+    #tenpar_xsec_stress_test_3()
+    
+    #invest()
     #tenpar_xsec_high_phi_test()
     
-    #new_fmt_load_test()
+    new_fmt_load_test()
     #threept_fail_test()

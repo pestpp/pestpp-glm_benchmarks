@@ -1,6 +1,6 @@
 pcf
 * control data
-restart regularisation
+restart estimation
      45   7289      1      0    111  
     1    5 double point  1    0  0
    5.000       -3.0000      0.3  0.03  10     999 LAMFORGIVE
